@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TASK MANAGER</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <h1>TASK MANAGER</h1>
+        <p class="subtitle">Simple Linked List Task Manager</p>
+      </header>
+
+      <section class="panel">
+        <form action="{{ url_for('add_task') }}" method="post" class="task-form">
+          <input
+            type="text"
+            name="task_name"
+            id="task_name"
+            placeholder="Enter a new task..."
+            required
+          />
+          <button type="submit">Add Task</button>
+        </form>
+      </section>
+
+      <section class="panel search-panel">
+        <form action="{{ url_for('search_task') }}" method="post" class="search-form">
+          <input
+            type="text"
+            name="search_task"
+            id="search_task"
+            placeholder="Search task"
+            value="{{ search_query }}"
+          />
+          <button type="submit">Search</button>
+        </form>
+      </section>
+
+      <main class="tasks-section">
+        {% if tasks %}
+          {% for task in tasks %}
+            <article class="task-card {{ 'completed' if task.completed else 'pending' }}">
+              <div class="task-header">
+                <span class="task-id">Task {{ task.task_id }}</span>
+                <span class="task-status">
+                  {% if task.completed %}
+                    Completed
+                  {% else %}
+                    Pending
+                  {% endif %}
+                </span>
+              </div>
+
+              <h3>{{ task.task_name }}</h3>
+
+              <div class="task-actions">
+                {% if not task.completed %}
+                  <form action="{{ url_for('complete_task') }}" method="post">
+                    <input type="hidden" name="task_name" value="{{ task.task_name }}" />
+                    <button type="submit" class="btn btn-primary">Complete</button>
+                  </form>
+                {% endif %}
+
+                <form action="{{ url_for('delete_task') }}" method="post">
+                  <input type="hidden" name="task_name" value="{{ task.task_name }}" />
+                  <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+              </div>
+            </article>
+          {% endfor %}
+        {% else %}
+          <p class="empty-message">No tasks available.</p>
+        {% endif %}
+      </main>
+    </div>
+  </body>
+</html>
